@@ -1,10 +1,11 @@
 package ru.practicum.shareit.user.storage;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.exception.Validations;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public List<User> getAll() {
-        return users.values().stream().toList();
+        return new ArrayList<>(users.values());
     }
 
     @Override
