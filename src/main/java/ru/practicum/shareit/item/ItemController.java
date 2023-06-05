@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -12,40 +13,42 @@ import java.util.List;
 /**
  * TODO Sprint add-controllers.
  */
+@RequiredArgsConstructor
+@Slf4j
 @RestController
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
 
-    @Autowired
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
-
     @GetMapping("/{id}")
     public ItemDto get(@PathVariable("id") Long itemId) {
+        log.info("Get item with id = " + itemId);
         return itemService.getById(itemId);
     }
 
     @GetMapping
     public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Get all items with userId = " + userId);
         return itemService.getAll(userId);
     }
 
     @PostMapping
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody Item item) {
+        log.info("Create new item with userId = " + userId);
         return itemService.create(userId, item);
     }
 
     @PatchMapping("/{id}")
     public ItemDto update(@PathVariable("id") Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId,
                           @Valid @RequestBody ItemDto item) {
+        log.info("Update item with userId = " + userId);
         return itemService.update(userId, itemId, item);
     }
 
     @GetMapping("/search")
     public List<ItemDto> get(@RequestHeader("X-Sharer-User-Id") Long userId,
                              @RequestParam String text) {
+        log.info("Search items with text = " + text);
         return itemService.search(userId, text);
     }
 }

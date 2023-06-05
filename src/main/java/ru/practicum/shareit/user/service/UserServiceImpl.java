@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -8,14 +8,10 @@ import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
-
-    @Autowired
-    public UserServiceImpl(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     @Override
     public User getById(long userId) {

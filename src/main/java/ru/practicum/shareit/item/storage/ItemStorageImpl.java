@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -12,12 +13,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 public class ItemStorageImpl implements ItemStorage {
     private final UserStorage userStorage;
-    public static Long idItem = 1L;
+    AtomicInteger idItem = new AtomicInteger(1);
     private final Map<Long, Item> items = new HashMap<>();
 
     @Autowired
@@ -29,15 +32,16 @@ public class ItemStorageImpl implements ItemStorage {
     public ItemDto create(Long userId, Item item) {
         if (userStorage.getAll().stream().anyMatch(user -> user.getId().equals(userId))) {
             item = item.toBuilder()
-                    .id(idItem)
+                    .id(idItem.longValue())
                     .description(item.getDescription())
                     .name(item.getName())
                     .owner(userStorage.getById(userId))
                     .build();
             items.put(item.getId(), item);
-            idItem++;
+            idItem.addAndGet(1);
             return ItemMapper.toItemDto(item);
         } else {
+            log.error("User with id = " + userId + " not found");
             throw new NotFoundException("пользователь не найден");
         }
     }
@@ -74,9 +78,11 @@ public class ItemStorageImpl implements ItemStorage {
                 items.put(updateItem.getId(), updateItem);
                 return ItemMapper.toItemDto(updateItem);
             } else {
+                log.error("User with id = " + userId + " haven`t item with id = " + itemId);
                 throw new NotFoundException("Пользователь не имеет такой вещи.");
             }
         } else {
+            log.error("User with id = " + userId + " not found");
             throw new NotFoundException("пользователь не найден");
         }
     }

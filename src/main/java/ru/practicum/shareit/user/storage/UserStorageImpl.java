@@ -1,7 +1,8 @@
 package ru.practicum.shareit.user.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.Validations;
+import ru.practicum.shareit.exception.ValidationsException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -9,11 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Repository
 public class UserStorageImpl implements UserStorage {
-    Map<Long, User> users = new HashMap<>();
-    public static Long idUser = 1L;
+    private final Map<Long, User> users = new HashMap<>();
+    AtomicInteger idUser = new AtomicInteger(1);
 
     @Override
     public List<User> getAll() {
@@ -24,11 +27,12 @@ public class UserStorageImpl implements UserStorage {
     public User create(User user) {
         User finalUser = user;
         if (users.values().stream().anyMatch(saveUser -> saveUser.getEmail().equals(finalUser.getEmail()))) {
-            throw new Validations("Такой email уже используется");
+            log.error("email = " + user.getEmail() + " is already in use.");
+            throw new ValidationsException("Такой email уже используется");
         }
-        user = user.toBuilder().id(idUser).build();
+        user = user.toBuilder().id(idUser.longValue()).build();
         users.put(user.getId(), user);
-        idUser++;
+        idUser.addAndGet(1);
         return user;
     }
 
@@ -36,7 +40,8 @@ public class UserStorageImpl implements UserStorage {
     public User update(UserDto userDto, Long userId) {
         if (users.values().stream().filter(saveUser -> saveUser.getEmail().equals(userDto.getEmail()))
                 .anyMatch(saveUser -> !saveUser.getId().equals(userId))) {
-            throw new Validations("Такой email уже используется");
+            log.error("email = " + userDto.getEmail() + " is already in use");
+            throw new ValidationsException("Такой email уже используется");
         }
         User updateUser = getById(userId);
         if (userDto.getName() != null) {

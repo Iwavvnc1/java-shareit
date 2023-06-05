@@ -1,9 +1,9 @@
 package ru.practicum.shareit.exception;
 
-public class InCorrectData extends RuntimeException {
+public class ValidationsException extends RuntimeException {
     private final String parameter;
 
-    public InCorrectData(String parameter) {
+    public ValidationsException(String parameter) {
         this.parameter = parameter;
     }
 

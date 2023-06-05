@@ -11,7 +11,7 @@ import ru.practicum.shareit.user.model.ErrorResponse;
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleValidationException(final Validations e) {
+    public ErrorResponse handleValidationException(final ValidationsException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -29,7 +29,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final InCorrectData e) {
+    public ErrorResponse handleValidationException(final InCorrectDataException e) {
         return new ErrorResponse(e.getMessage());
     }
 }
