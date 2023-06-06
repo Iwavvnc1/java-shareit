@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Repository
 public class UserStorageImpl implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
-    AtomicInteger idUser = new AtomicInteger(1);
+    private final AtomicInteger idUser = new AtomicInteger(1);
 
     @Override
     public List<User> getAll() {

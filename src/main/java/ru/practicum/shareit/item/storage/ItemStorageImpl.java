@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Repository
 public class ItemStorageImpl implements ItemStorage {
     private final UserStorage userStorage;
-    AtomicInteger idItem = new AtomicInteger(1);
+    private final AtomicInteger idItem = new AtomicInteger(1);
     private final Map<Long, Item> items = new HashMap<>();
 
     @Autowired
