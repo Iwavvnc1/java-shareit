@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.storage.UserStorage;
 
@@ -29,7 +28,7 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public ItemDto create(Long userId, Item item) {
+    public Item create(Long userId, Item item) {
         if (userStorage.getAll().stream().anyMatch(user -> user.getId().equals(userId))) {
             item = item.toBuilder()
                     .id(idItem.longValue())
@@ -39,7 +38,7 @@ public class ItemStorageImpl implements ItemStorage {
                     .build();
             items.put(item.getId(), item);
             idItem.addAndGet(1);
-            return ItemMapper.toItemDto(item);
+            return item;
         } else {
             log.error("User with id = " + userId + " not found");
             throw new NotFoundException("пользователь не найден");
@@ -47,20 +46,18 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public List<ItemDto> getAll(Long userId) {
-        List<ItemDto> itemsDto = new ArrayList<>();
-        items.values().stream().filter(item -> item.getOwner().getId().equals(userId))
-                .forEach(item -> itemsDto.add(ItemMapper.toItemDto(item)));
-        return itemsDto;
+    public List<Item> getAll(Long userId) {
+        return items.values().stream().filter(item -> item.getOwner().getId().equals(userId))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto getById(Long itemId) {
-        return ItemMapper.toItemDto(items.get(itemId));
+    public Item getById(Long itemId) {
+        return items.get(itemId);
     }
 
     @Override
-    public ItemDto update(Long userId, Long itemId, ItemDto item) {
+    public Item update(Long userId, Long itemId, ItemDto item) {
         if (userStorage.getAll().stream().anyMatch(user -> user.getId().equals(userId))) {
             if (userStorage.getAll().stream()
                     .filter(user -> user.getId().equals(userId))
@@ -76,7 +73,7 @@ public class ItemStorageImpl implements ItemStorage {
                     updateItem = updateItem.toBuilder().available(item.getAvailable()).build();
                 }
                 items.put(updateItem.getId(), updateItem);
-                return ItemMapper.toItemDto(updateItem);
+                return updateItem;
             } else {
                 log.error("User with id = " + userId + " haven`t item with id = " + itemId);
                 throw new NotFoundException("Пользователь не имеет такой вещи.");
@@ -88,13 +85,12 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public List<ItemDto> search(Long userId, String text) {
+    public List<Item> search(Long userId, String text) {
         if (text.length() < 1) return new ArrayList<>();
         return items.values().stream()
                 .filter(item -> item.getAvailable().equals(true))
                 .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
                         || item.getDescription().toLowerCase().contains(text.toLowerCase()))
-                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 }

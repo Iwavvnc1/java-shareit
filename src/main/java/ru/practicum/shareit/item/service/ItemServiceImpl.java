@@ -14,27 +14,27 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
 
     @Override
-    public ItemDto create(Long userId, Item item) {
+    public Item create(Long userId, Item item) {
         return itemStorage.create(userId, item);
     }
 
     @Override
-    public List<ItemDto> getAll(Long userId) {
+    public List<Item> getAll(Long userId) {
         return itemStorage.getAll(userId);
     }
 
     @Override
-    public ItemDto getById(Long itemId) {
+    public Item getById(Long itemId) {
         return itemStorage.getById(itemId);
     }
 
     @Override
-    public ItemDto update(Long userId, Long itemId, ItemDto item) {
+    public Item update(Long userId, Long itemId, ItemDto item) {
         return itemStorage.update(userId, itemId, item);
     }
 
     @Override
-    public List<ItemDto> search(Long userId, String text) {
+    public List<Item> search(Long userId, String text) {
         return itemStorage.search(userId, text);
     }
 }
