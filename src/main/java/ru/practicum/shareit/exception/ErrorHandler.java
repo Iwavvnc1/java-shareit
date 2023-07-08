@@ -22,6 +22,7 @@ public class ErrorHandler {
     public ErrorResponse handleValidationException(final NotFoundException e) {
         return new ErrorResponse(e.getParameter());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleValidationException(final NoSuchElementException e) {

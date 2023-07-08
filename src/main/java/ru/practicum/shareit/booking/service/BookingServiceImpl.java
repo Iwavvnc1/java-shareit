@@ -71,15 +71,15 @@ public class BookingServiceImpl implements BookingService {
         existUser(userId);
         User user = userRepository.findById(userId).get();
         Item item = itemRepository.findById(bookingDto.getItemId()).get();
-        if(!item.getAvailable()) {
+        if (!item.getAvailable()) {
             throw new InCorrectDataException("item is not available.");
         }
         if (item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("");
         }
-        if(bookingDto.getStart() == null || bookingDto.getEnd() == null ||
+        if (bookingDto.getStart() == null || bookingDto.getEnd() == null ||
                 bookingDto.getStart().equals(bookingDto.getEnd()) || bookingDto.getStart().isAfter(bookingDto.getEnd())
-        || bookingDto.getStart().isBefore(LocalDateTime.now())) {
+                || bookingDto.getStart().isBefore(LocalDateTime.now())) {
             throw new InCorrectDataException("Incorrect time.");
         }
         return toBookingOutDto(bookingRepository.save(toBooking(bookingDto, user,

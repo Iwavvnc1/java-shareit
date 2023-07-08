@@ -15,6 +15,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking as b " +
             "where b.item.id in :itemIds")
     List<Booking> findByItemIdIn(@Param("itemIds") List<Long> itemIds);
+
     @Query("select b " +
             "from Booking as b " +
             "where b.item.id = ?1 " +

@@ -17,6 +17,7 @@ public class BookingMapper {
                 .itemName(booking.getItem().getName())
                 .build();
     }
+
     public static BookingOutDto toBookingOutDto(Booking booking) {
         return BookingOutDto.builder()
                 .id(booking.getId())
@@ -27,7 +28,8 @@ public class BookingMapper {
                 .item(booking.getItem())
                 .build();
     }
-    public static Booking toBooking (BookingInDto bookingDto, User user, Item item, Status status) {
+
+    public static Booking toBooking(BookingInDto bookingDto, User user, Item item, Status status) {
         Booking booking = new Booking();
         booking.setId(bookingDto.getId());
         booking.setItem(item);
