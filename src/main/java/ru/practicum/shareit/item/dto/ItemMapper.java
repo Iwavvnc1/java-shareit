@@ -12,4 +12,12 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .build();
     }
+    public static ItemWithTimeDto toItemWithtimeDto(Item item) {
+        return ItemWithTimeDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+    }
 }

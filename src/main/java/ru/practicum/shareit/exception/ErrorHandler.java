@@ -7,17 +7,24 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.user.model.ErrorResponse;
 
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleValidationException(final ValidationsException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(e.getParameter());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleValidationException(final NotFoundException e) {
+        return new ErrorResponse(e.getParameter());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleValidationException(final NoSuchElementException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -30,6 +37,6 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final InCorrectDataException e) {
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(e.getParameter());
     }
 }
