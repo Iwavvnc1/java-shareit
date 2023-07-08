@@ -81,8 +81,8 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.length() == 0) {
             return new ArrayList<>();
         }
-        return itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailable
-                        (text, text, true)
+        return itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailable(text,
+                        text, true)
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
