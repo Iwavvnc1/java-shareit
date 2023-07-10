@@ -26,21 +26,21 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @NotNull
     @Future
     @Column(name = "start_date")
-    LocalDateTime start;
+    private LocalDateTime start;
     @Column(name = "end_date")
     @NotNull
-    LocalDateTime end;
+    private LocalDateTime end;
     @ManyToOne
-    Item item;
+    private Item item;
     @ManyToOne
-    User booker;
+    private User booker;
     @Enumerated(EnumType.ORDINAL)
     @NotNull
-    Status status;
+    private Status status;
 }
 /*id — уникальный идентификатор бронирования;
 start — дата и время начала бронирования;

@@ -19,12 +19,12 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @NotBlank
-    String text;
+    private String text;
     @ManyToOne
-    Item item;
+    private Item item;
     @ManyToOne
-    User author;
-    LocalDateTime created;
+    private User author;
+    private LocalDateTime created;
 }

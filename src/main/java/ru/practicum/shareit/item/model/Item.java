@@ -28,16 +28,16 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @NotBlank
-    String name;
+    private String name;
     @NotBlank
-    String description;
+    private String description;
     @NotNull
     @Column(name = "is_available")
-    Boolean available;
+    private Boolean available;
     @ManyToOne(fetch = FetchType.LAZY)
-    User owner;
+    private User owner;
     @ManyToOne(fetch = FetchType.LAZY)
-    ItemRequest request;
+    private ItemRequest request;
 }

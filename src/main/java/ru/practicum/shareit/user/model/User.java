@@ -21,12 +21,12 @@ import javax.validation.constraints.NotBlank;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @NotBlank
-    String name;
+    private String name;
     @NotBlank
     @Email
-    String email;
+    private String email;
 
     public User(Long id) {
         this.id = id;
