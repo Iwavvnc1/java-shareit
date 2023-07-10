@@ -1,11 +1,11 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.Value;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
 
-@Value
+@UtilityClass
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
         return ItemDto.builder()

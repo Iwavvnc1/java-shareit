@@ -21,8 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.booking.dto.BookingMapper.toBooking;
-import static ru.practicum.shareit.booking.dto.BookingMapper.toBookingOutDto;
+import static ru.practicum.shareit.booking.dto.BookingMapper.*;
 
 @RequiredArgsConstructor
 @Component

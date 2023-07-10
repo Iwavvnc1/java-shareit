@@ -21,8 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.item.dto.ItemMapper.toItemDto;
-import static ru.practicum.shareit.item.dto.ItemMapper.toItemWithTimeDto;
+import static ru.practicum.shareit.item.dto.CommentMapper.*;
+import static ru.practicum.shareit.item.dto.ItemMapper.*;
 
 @RequiredArgsConstructor
 @Component
@@ -98,7 +98,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(userRepository.findById(userId).get());
         comment.setItem(itemRepository.findById(itemId).get());
         comment.setCreated(LocalDateTime.now());
-        return CommentMapper.toCommentDto(commentRepository.save(comment));
+        return toCommentDto(commentRepository.save(comment));
     }
 
     private void existUser(Long userId) {

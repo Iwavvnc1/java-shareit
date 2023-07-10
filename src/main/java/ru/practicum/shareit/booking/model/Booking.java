@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,9 +31,11 @@ public class Booking {
     @NotNull
     @Future
     @Column(name = "start_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime start;
     @Column(name = "end_date")
     @NotNull
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime end;
     @ManyToOne
     private Item item;
