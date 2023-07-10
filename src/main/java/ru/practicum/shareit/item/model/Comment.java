@@ -27,6 +27,6 @@ public class Comment {
     private Item item;
     @ManyToOne
     private User author;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 }
