@@ -3,38 +3,50 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.user.dto.UserMapper.*;
 
 @RequiredArgsConstructor
 @Component
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
-    public User getById(long userId) {
-        return userStorage.getById(userId);
+    public UserDto getById(long userId) {
+        return toUserDto(userRepository.findById(userId).get());
     }
 
     @Override
-    public List<User> getAll() {
-        return userStorage.getAll();
+    public List<UserDto> getAll() {
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
     @Override
-    public User create(User user) {
-        return userStorage.create(user);
+    public UserDto create(User user) {
+        return toUserDto(userRepository.save(user));
     }
 
     @Override
-    public User update(long userId, UserDto user) {
-        return userStorage.update(user, userId);
+    public UserDto update(long userId, User user) {
+        user.setId(userId);
+        User saveUser = userRepository.findById(userId).get();
+        if (user.getName() == null) {
+            user.setName(saveUser.getName());
+        }
+        if (user.getEmail() == null) {
+            user.setEmail(saveUser.getEmail());
+        }
+        return toUserDto(userRepository.save(user));
     }
 
     @Override
     public void delete(long userId) {
-        userStorage.delete(userId);
+        userRepository.deleteById(userId);
     }
 }

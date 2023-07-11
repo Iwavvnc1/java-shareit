@@ -22,25 +22,25 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public User get(@PathVariable("id") Long userId) {
+    public UserDto get(@PathVariable("id") Long userId) {
         log.info("Get user with id = " + userId);
         return userService.getById(userId);
     }
 
     @GetMapping
-    public List<User> getAll() {
+    public List<UserDto> getAll() {
         log.info("Get all user");
         return userService.getAll();
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public UserDto create(@Valid @RequestBody User user) {
         log.info("Create new user");
         return userService.create(user);
     }
 
     @PatchMapping("/{id}")
-    public User update(@Valid @PathVariable("id") Long userId, @RequestBody UserDto user) {
+    public UserDto update(@Valid @PathVariable("id") Long userId, @RequestBody User user) {
         log.info("Update user with id = " + userId);
         return userService.update(userId, user);
     }

@@ -3,7 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemWithTimeAndCommentDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -21,13 +24,13 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{id}")
-    public ItemDto get(@PathVariable("id") Long itemId) {
+    public ItemWithTimeAndCommentDto get(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("id") Long itemId) {
         log.info("Get item with id = " + itemId);
-        return itemService.getById(itemId);
+        return itemService.getById(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemWithTimeAndCommentDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Get all items with userId = " + userId);
         return itemService.getAll(userId);
     }
@@ -51,4 +54,12 @@ public class ItemController {
         log.info("Search items with text = " + text);
         return itemService.search(userId, text);
     }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody Comment comment,
+                                    @PathVariable("itemId") Long itemId) {
+        log.info("Create new comment with userId = " + userId);
+        return itemService.createComment(userId, itemId, comment);
+    }
 }
+/* POST /items/{itemId}/comment*/

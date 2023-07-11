@@ -25,12 +25,11 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public User create(User user) {
-        User finalUser = user;
-        if (users.values().stream().anyMatch(saveUser -> saveUser.getEmail().equals(finalUser.getEmail()))) {
+        if (users.values().stream().anyMatch(saveUser -> saveUser.getEmail().equals(user.getEmail()))) {
             log.error("email = " + user.getEmail() + " is already in use.");
             throw new ValidationsException("Такой email уже используется");
         }
-        user = user.toBuilder().id(idUser.longValue()).build();
+        user.setId(idUser.longValue());
         users.put(user.getId(), user);
         idUser.addAndGet(1);
         return user;
@@ -45,10 +44,10 @@ public class UserStorageImpl implements UserStorage {
         }
         User updateUser = getById(userId);
         if (userDto.getName() != null) {
-            updateUser = updateUser.toBuilder().name(userDto.getName()).build();
+            updateUser.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {
-            updateUser = updateUser.toBuilder().email(userDto.getEmail()).build();
+            updateUser.setEmail(userDto.getEmail());
         }
         users.put(updateUser.getId(), updateUser);
         return updateUser;
