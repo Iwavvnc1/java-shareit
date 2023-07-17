@@ -13,7 +13,7 @@ public interface BookingService {
 
     BookingOutDto updateStatus(Long userId, Long bookingId, Boolean status);
 
-    List<BookingOutDto> getAllByUser(Long userId, String state);
+    List<BookingOutDto> getAllByUser(Long userId, String state, Integer from, Integer size);
 
-    List<BookingOutDto> getAllByItem(Long userId, String state);
+    List<BookingOutDto> getAllByItem(Long userId, String state, Integer from, Integer size);
 }

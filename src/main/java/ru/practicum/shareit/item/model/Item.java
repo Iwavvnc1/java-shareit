@@ -40,4 +40,12 @@ public class Item {
     private User owner;
     @ManyToOne(fetch = FetchType.LAZY)
     private ItemRequest request;
+
+    public Item(Long id, String name, String description, Boolean available, User owner) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+    }
 }
