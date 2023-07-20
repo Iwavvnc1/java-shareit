@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.InCorrectDataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -28,7 +28,7 @@ import static ru.practicum.shareit.item.dto.ItemMapper.toItemDto;
 import static ru.practicum.shareit.request.dto.ItemRequestMapper.toItemRequestCreateDto;
 import static ru.practicum.shareit.request.dto.ItemRequestMapper.toItemRequestWithItemsDto;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
