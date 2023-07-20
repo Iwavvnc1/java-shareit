@@ -44,7 +44,8 @@ public class ItemServiceImpl implements ItemService {
                     itemRequestRepository.findById(itemDto.getRequestId()).get();
             return toItemDto(itemRepository.save(toItemRequest(itemDto, user, itemRequest)));
         }
-        return toItemDto(itemRepository.save(toItem(itemDto, user)));
+        Item item = toItem(itemDto, user);
+        return toItemDto(itemRepository.save(item));
     }
 
     @Override
@@ -70,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
         existUser(userId);
         Item saveItem = itemRepository.findById(itemId).get();
         if (!userId.equals(saveItem.getOwner().getId())) {
-            throw new NotFoundException("Такого сочетания вещь/пользователь не существует");
+            throw new NotFoundException("Item not found");
         }
         if (item.getName() != null) {
             saveItem.setName(item.getName());
@@ -124,7 +125,8 @@ public class ItemServiceImpl implements ItemService {
             return toItemWithTimeDto(item);
         }
         if (itemBookings.size() == 1) {
-            if (itemBookings.get(0).getEnd().isAfter(LocalDateTime.now())) {
+            if (itemBookings.get(0).getEnd().isAfter(LocalDateTime.now())
+                    && itemBookings.get(0).getStart().isBefore(LocalDateTime.now())) {
                 return ItemWithTimeAndCommentDto.builder()
                         .id(item.getId())
                         .available(item.getAvailable())

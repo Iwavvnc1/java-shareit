@@ -139,7 +139,7 @@ public class BookingServiceImpl implements BookingService {
             return bookings.sorted(Comparator.comparing(Booking::getStart).reversed())
                     .map(BookingMapper::toBookingOutDto).collect(Collectors.toList());
         }
-        if (state == null) {
+        if (state == null || state.equals("ALL")) {
             return new PageImpl<>(bookings.sorted(Comparator.comparing(Booking::getStart).reversed())
                     .map(BookingMapper::toBookingOutDto).collect(Collectors.toList()),
                     PageRequest.of(page, size, Sort.by("id").ascending()), size.longValue()).getContent();

@@ -2,7 +2,6 @@ package ru.practicum.shareit.request.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -60,9 +59,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new InCorrectDataException("Incorrect data.");
         }
         int page = from / size;
-        return new PageImpl<>(getItemRequests(itemRequestRepository
-                .findAll(PageRequest.of(page, size, Sort.by("created"))).stream(), userId, true), PageRequest
-                .of(page, size, Sort.by("created")), size.longValue()).getContent();
+        return getItemRequests(itemRequestRepository
+                .findAll(PageRequest.of(page, size, Sort.by("created"))).stream(), userId, true);
     }
 
     @Override
