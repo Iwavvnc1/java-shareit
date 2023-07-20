@@ -76,7 +76,7 @@ class UserControllerIntegrationTest {
         long userId = 1L;
         User user = new User(userId, "name", "mail@mail.com");
         UserDto returnUser = new UserDto(userId, "name", "mail@mail.com");
-        when(userService.create(any())).thenReturn(returnUser);
+        when(userService.create(user)).thenReturn(returnUser);
         String result = mockMvc.perform(post("/users")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(user)))
@@ -86,7 +86,7 @@ class UserControllerIntegrationTest {
                 .getResponse()
                 .getContentAsString();
         assertEquals(objectMapper.writeValueAsString(user), result);
-        verify(userService).create(any());
+        verify(userService).create(user);
     }
 
     @SneakyThrows

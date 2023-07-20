@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.exception.InCorrectDataException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.Storage.ItemRequestRepository;
@@ -157,6 +158,7 @@ class ItemRequestServiceImplTest {
         when(itemRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
         when(itemRepository.findByRequestId(requestId)).thenReturn(items);
         ItemRequestWithItemsDto returnRequest = itemRequestService.getById(userId, requestId);
+        List<ItemDto> itemsDto = returnRequest.getItems();
         assertEquals(requestId, returnRequest.getId());
         assertEquals(request.getDescription(), returnRequest.getDescription());
         assertEquals(request.getRequestor(), returnRequest.getRequestor());

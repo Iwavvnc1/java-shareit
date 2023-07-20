@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.user.model.ErrorResponse;
 
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
@@ -34,5 +35,11 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final InCorrectDataException e) {
         return new ErrorResponse(e.getParameter());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleValidationException(final SQLException e) {
+        return new ErrorResponse(e.getMessage());
     }
 }
