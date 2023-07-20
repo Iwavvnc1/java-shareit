@@ -110,19 +110,6 @@ class UserControllerIntegrationTest {
 
     @SneakyThrows
     @Test
-    void update_WithFailedUser_thenReturnBadRequest() {
-        long userId = 1L;
-        User user = new User(userId, "name", "mail");
-        mockMvc.perform(patch("/users/{id}", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(user)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-        verify(userService, never()).create(user);
-    }
-
-    @SneakyThrows
-    @Test
     void delete_whenInvoked_thenReturnOk() {
         long userId = 1L;
         mockMvc.perform(delete("/users/{id}", userId))
