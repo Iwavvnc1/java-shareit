@@ -10,7 +10,7 @@ import ru.practicum.shareit.user.storage.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.user.dto.UserMapper.*;
+import static ru.practicum.shareit.user.dto.UserMapper.toUserDto;
 
 @RequiredArgsConstructor
 @Component

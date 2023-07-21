@@ -1,9 +1,6 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -21,6 +18,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Item {
     public Item(Long id) {
         this.id = id;
@@ -40,4 +38,12 @@ public class Item {
     private User owner;
     @ManyToOne(fetch = FetchType.LAZY)
     private ItemRequest request;
+
+    public Item(Long id, String name, String description, Boolean available, User owner) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+    }
 }

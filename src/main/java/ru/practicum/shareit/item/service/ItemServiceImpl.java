@@ -12,6 +12,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.request.Storage.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
@@ -21,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.item.dto.CommentMapper.*;
+import static ru.practicum.shareit.item.dto.CommentMapper.toCommentDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.*;
 
 @RequiredArgsConstructor
@@ -31,11 +33,18 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
-    public ItemDto create(Long userId, Item item) {
+    public ItemDto create(Long userId, ItemWithRequestDto itemDto) {
         existUser(userId);
-        item.setOwner(new User(userId));
+        User user = userRepository.findById(userId).get();
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest =
+                    itemRequestRepository.findById(itemDto.getRequestId()).get();
+            return toItemDto(itemRepository.save(toItemRequest(itemDto, user, itemRequest)));
+        }
+        Item item = toItem(itemDto, user);
         return toItemDto(itemRepository.save(item));
     }
 
@@ -62,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
         existUser(userId);
         Item saveItem = itemRepository.findById(itemId).get();
         if (!userId.equals(saveItem.getOwner().getId())) {
-            throw new NotFoundException("Такого сочетания вещь/пользователь не существует");
+            throw new NotFoundException("Item not found");
         }
         if (item.getName() != null) {
             saveItem.setName(item.getName());
@@ -116,7 +125,8 @@ public class ItemServiceImpl implements ItemService {
             return toItemWithTimeDto(item);
         }
         if (itemBookings.size() == 1) {
-            if (itemBookings.get(0).getEnd().isAfter(LocalDateTime.now())) {
+            if (itemBookings.get(0).getEnd().isAfter(LocalDateTime.now())
+                    && itemBookings.get(0).getStart().isBefore(LocalDateTime.now())) {
                 return ItemWithTimeAndCommentDto.builder()
                         .id(item.getId())
                         .available(item.getAvailable())
