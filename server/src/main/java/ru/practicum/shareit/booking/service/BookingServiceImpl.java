@@ -1,10 +1,10 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingInDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
@@ -33,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
 
+    @Transactional
     @Override
     public BookingOutDto updateStatus(Long userId, Long bookingId, Boolean status) {
         Booking booking = bookingRepository.findById(bookingId).get();
@@ -51,50 +52,33 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Transactional
     @Override
     public List<BookingOutDto> getAllByItem(Long userId, String state, Integer from, Integer size) {
-        if (size != null && size <= 0 || from != null && from < 0) {
-            throw new InCorrectDataException("Incorrect data.");
-        }
         existUser(userId);
         List<Long> itemIds = new ArrayList<>();
         itemRepository.findAllByOwnerIdIs(userId).forEach(item -> itemIds.add(item.getId()));
-        Stream<Booking> bookings;
-        Integer page = null;
-        if (size != null && from != null) {
-            page = from / size;
-        }
-        if (size != null && page != null) {
-            bookings = bookingRepository.findByItemIdIn(itemIds, PageRequest.of(page, size, Sort.by("id")
-                            .descending()))
-                    .stream();
-        } else {
-            bookings = bookingRepository.findByItemIdIn(itemIds).stream();
-        }
+        int page = from / size;
+        Stream<Booking> bookings = bookingRepository
+                .findByItemIdIn(itemIds, PageRequest.of(page, size, Sort.by("id")
+                        .descending()))
+                .stream();
         return getAllByState(bookings, state, page, size);
     }
 
+    @Transactional
     @Override
     public List<BookingOutDto> getAllByUser(Long userId, String state, Integer from, Integer size) {
-        if (size != null && size <= 0 || from != null && from < 0) {
-            throw new InCorrectDataException("Incorrect data.");
-        }
         existUser(userId);
-        Integer page = null;
-        if (size != null && from != null) {
-            page = from / size;
-        }
-        Stream<Booking> bookings;
-        if (size != null && page != null) {
-            bookings = bookingRepository.findByBookerId(userId, PageRequest.of(page, size, Sort.by("id")
-                            .descending()))
-                    .stream();
-        } else {
-            bookings = bookingRepository.findByBookerId(userId).stream();
-        }
+        int page = from / size;
+        Stream<Booking> bookings = bookingRepository
+                .findByBookerId(userId, PageRequest.of(page, size, Sort.by("id")
+                        .descending()))
+                .stream();
         return getAllByState(bookings, state, page, size);
     }
 
+    @Transactional
     @Override
     public BookingOutDto create(Long userId, BookingInDto bookingDto) {
         existUser(userId);
@@ -132,16 +116,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private List<BookingOutDto> getAllByState(Stream<Booking> bookings, String state, Integer page, Integer size) {
-        if ((state == null || state.equals("ALL")) && (page == null || size == null)) {
-            return bookings.sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .map(BookingMapper::toBookingOutDto).collect(Collectors.toList());
-        }
-        if (state == null || state.equals("ALL")) {
-            return new PageImpl<>(bookings.sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .map(BookingMapper::toBookingOutDto).collect(Collectors.toList()),
-                    PageRequest.of(page, size, Sort.by("id").ascending()), size.longValue()).getContent();
-        }
+
         switch (state) {
+            case ("ALL"):
+                return bookings.sorted(Comparator.comparing(Booking::getStart).reversed())
+                        .map(BookingMapper::toBookingOutDto).collect(Collectors.toList());
             case ("CURRENT"):
                 bookings = bookings.filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                         .filter(booking -> booking.getEnd().isAfter(LocalDateTime.now()));
@@ -162,11 +141,6 @@ public class BookingServiceImpl implements BookingService {
                 break;
             default:
                 throw new InCorrectDataException("Unknown state: UNSUPPORTED_STATUS");
-        }
-        if (page != null && size != null) {
-            return new PageImpl<>(bookings.sorted(Comparator.comparing(Booking::getStart).reversed())
-                    .map(BookingMapper::toBookingOutDto)
-                    .collect(Collectors.toList()), PageRequest.of(page, size), size.longValue()).getContent();
         }
         return bookings.sorted(Comparator.comparing(Booking::getStart).reversed())
                 .map(BookingMapper::toBookingOutDto)

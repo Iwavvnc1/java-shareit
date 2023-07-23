@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.dto.BookingMapper;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.InCorrectDataException;
@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.booking.dto.BookingMapper.toBookingIdOutDto;
 import static ru.practicum.shareit.item.dto.CommentMapper.toCommentDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.*;
 
@@ -35,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final ItemRequestRepository itemRequestRepository;
 
+    @Transactional
     @Override
     public ItemDto create(Long userId, ItemWithRequestDto itemDto) {
         existUser(userId);
@@ -66,6 +68,7 @@ public class ItemServiceImpl implements ItemService {
         return getItemWithTimeAndCommentDto(item);
     }
 
+    @Transactional
     @Override
     public ItemDto update(Long userId, Long itemId, ItemDto item) {
         existUser(userId);
@@ -117,48 +120,22 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public ItemWithTimeAndCommentDto getItemWithTimeAndCommentDto(Item item) {
-        List<Booking> itemBookings = bookingRepository.findBookingByItemId(item.getId());
+        Booking nextBooking = bookingRepository
+                .getFirstByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
+        Booking lastBooking = bookingRepository
+                .getTopByItemIdAndStartAfterOrderByStartAsc(item.getId(), LocalDateTime.now());
         List<CommentDto> itemComments = commentRepository.findCommentsByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentDto).collect(Collectors.toList());
-
-        if (itemBookings == null || itemBookings.size() == 0) {
-            return toItemWithTimeDto(item);
+        if (nextBooking == null && lastBooking != null) {
+            return toItemWithTimeDto(item, toBookingIdOutDto(lastBooking), null, itemComments);
+        } else if (nextBooking != null && lastBooking == null) {
+            return toItemWithTimeDto(item, null, toBookingIdOutDto(nextBooking), itemComments);
+        } else if (nextBooking == null) {
+            return toItemWithTimeDto(item, null, null, itemComments);
+        } else {
+            return toItemWithTimeDto(item, toBookingIdOutDto(lastBooking), toBookingIdOutDto(nextBooking),
+                    itemComments);
         }
-        if (itemBookings.size() == 1) {
-            if (itemBookings.get(0).getEnd().isAfter(LocalDateTime.now())
-                    && itemBookings.get(0).getStart().isBefore(LocalDateTime.now())) {
-                return ItemWithTimeAndCommentDto.builder()
-                        .id(item.getId())
-                        .available(item.getAvailable())
-                        .description(item.getDescription())
-                        .name(item.getName())
-                        .lastBooking(itemBookings.stream().map(BookingMapper::toBookingIdOutDto)
-                                .findFirst().get())
-                        .comments(itemComments)
-                        .build();
-            } else {
-                return ItemWithTimeAndCommentDto.builder()
-                        .id(item.getId())
-                        .available(item.getAvailable())
-                        .description(item.getDescription())
-                        .name(item.getName())
-                        .nextBooking(itemBookings.stream().map(BookingMapper::toBookingIdOutDto).findFirst().get())
-                        .comments(itemComments)
-                        .build();
-            }
-
-        }
-        return ItemWithTimeAndCommentDto.builder()
-                .id(item.getId())
-                .available(item.getAvailable())
-                .description(item.getDescription())
-                .name(item.getName())
-                .lastBooking(itemBookings.stream().filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
-                        .max(Comparator.comparing(Booking::getEnd)).map(BookingMapper::toBookingIdOutDto).get())
-                .nextBooking(itemBookings.stream().filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
-                        .min(Comparator.comparing(Booking::getStart)).map(BookingMapper::toBookingIdOutDto).get())
-                .comments(itemComments)
-                .build();
     }
 
     public ItemWithTimeAndCommentDto getItemWithCommentDto(Item item) {

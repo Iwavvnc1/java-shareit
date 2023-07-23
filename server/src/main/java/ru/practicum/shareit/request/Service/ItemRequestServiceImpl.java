@@ -5,7 +5,7 @@ import org.hibernate.Hibernate;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.InCorrectDataException;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -34,6 +34,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    @Transactional
     @Override
     public ItemRequestCreateDto create(Long userId, ItemRequestCreateDto itemRequestDto) {
         existUser(userId);
@@ -52,12 +53,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestWithItemsDto> getSort(Long userId, Integer from, Integer size) {
         existUser(userId);
-        if (from == null || size == null) {
-            return getAll(userId, true);
-        }
-        if (from < 0 || size <= 0) {
-            throw new InCorrectDataException("Incorrect data.");
-        }
         int page = from / size;
         return getItemRequests(itemRequestRepository
                 .findAll(PageRequest.of(page, size, Sort.by("created"))).stream(), userId, true);

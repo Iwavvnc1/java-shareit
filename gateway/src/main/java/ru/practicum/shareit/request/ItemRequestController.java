@@ -3,10 +3,13 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 /**
  * TODO Sprint add-item-requests.
@@ -15,13 +18,16 @@ import javax.validation.Valid;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
+@Validated
 public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;
 
     @GetMapping("/all")
     public ResponseEntity<Object> getSort(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                          @RequestParam(required = false) Integer from,
-                                          @RequestParam(required = false) Integer size) {
+                                          @RequestParam(required = false, defaultValue = "0") @PositiveOrZero
+                                          Integer from,
+                                          @RequestParam(required = false, defaultValue = "10") @Positive
+                                              Integer size) {
         log.info("Get itemRequests with id = " + userId);
         return itemRequestClient.getSort(userId, from, size);
     }

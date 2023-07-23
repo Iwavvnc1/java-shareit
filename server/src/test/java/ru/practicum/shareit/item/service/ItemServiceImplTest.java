@@ -99,6 +99,8 @@ class ItemServiceImplTest {
         List<Item> items = List.of(item);
         when(userRepository.existsUserById(userId)).thenReturn(true);
         when(itemRepository.findAllByOwnerIdIs(userId)).thenReturn(items);
+        when(bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(any(), any())).thenReturn(null);
+        when(bookingRepository.getTopByItemIdAndStartAfterOrderByStartAsc(any(), any())).thenReturn(null);
         assertEquals(returnItems, itemService.getAll(userId));
         verify(userRepository).existsUserById(userId);
         verify(itemRepository).findAllByOwnerIdIs(userId);
@@ -128,8 +130,8 @@ class ItemServiceImplTest {
         List<Comment> itemComments = List.of(comment);
         when(userRepository.existsUserById(userId)).thenReturn(true);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(bookingRepository.findBookingByItemId(itemId)).thenReturn(itemBookings);
         when(commentRepository.findCommentsByItemId(itemId)).thenReturn(itemComments);
+        when(bookingRepository.getTopByItemIdAndStartAfterOrderByStartAsc(any(), any())).thenReturn(booking);
         ItemWithTimeAndCommentDto returnItem = itemService.getById(userId, itemId);
         assertEquals("name", returnItem.getName());
         assertEquals("description", returnItem.getDescription());
@@ -138,7 +140,6 @@ class ItemServiceImplTest {
         assertEquals(comment.getId(), returnItem.getComments().get(0).getId());
         verify(userRepository).existsUserById(userId);
         verify(itemRepository).findById(itemId);
-        verify(bookingRepository).findBookingByItemId(itemId);
         verify(commentRepository).findCommentsByItemId(itemId);
     }
 
@@ -157,7 +158,7 @@ class ItemServiceImplTest {
         List<Comment> itemComments = List.of(comment);
         when(userRepository.existsUserById(userId)).thenReturn(true);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(bookingRepository.findBookingByItemId(itemId)).thenReturn(itemBookings);
+        when(bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(any(), any())).thenReturn(booking);
         when(commentRepository.findCommentsByItemId(itemId)).thenReturn(itemComments);
         ItemWithTimeAndCommentDto returnItem = itemService.getById(userId, itemId);
         assertEquals("name", returnItem.getName());
@@ -167,7 +168,6 @@ class ItemServiceImplTest {
         assertEquals(comment.getId(), returnItem.getComments().get(0).getId());
         verify(userRepository).existsUserById(userId);
         verify(itemRepository).findById(itemId);
-        verify(bookingRepository).findBookingByItemId(itemId);
         verify(commentRepository).findCommentsByItemId(itemId);
     }
 
@@ -185,11 +185,11 @@ class ItemServiceImplTest {
         Booking booking2 = new Booking(bookingId2, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
                 item, user, Status.APPROVED);
         Comment comment = new Comment(commentId, "text", item, user, LocalDateTime.now());
-        List<Booking> itemBookings = List.of(booking, booking2);
         List<Comment> itemComments = List.of(comment);
         when(userRepository.existsUserById(userId)).thenReturn(true);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(bookingRepository.findBookingByItemId(itemId)).thenReturn(itemBookings);
+        when(bookingRepository.getTopByItemIdAndStartAfterOrderByStartAsc(any(), any())).thenReturn(booking);
+        when(bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(any(), any())).thenReturn(booking2);
         when(commentRepository.findCommentsByItemId(itemId)).thenReturn(itemComments);
         ItemWithTimeAndCommentDto returnItem = itemService.getById(userId, itemId);
         assertEquals("name", returnItem.getName());
@@ -200,7 +200,6 @@ class ItemServiceImplTest {
         assertEquals(comment.getId(), returnItem.getComments().get(0).getId());
         verify(userRepository).existsUserById(userId);
         verify(itemRepository).findById(itemId);
-        verify(bookingRepository).findBookingByItemId(itemId);
         verify(commentRepository).findCommentsByItemId(itemId);
     }
 

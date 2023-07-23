@@ -31,6 +31,7 @@ services:
     container_name: gateway_container
     ports:
       - "8080:8080"
+      - "8089:8089"
     depends_on:
       - server
     environment:

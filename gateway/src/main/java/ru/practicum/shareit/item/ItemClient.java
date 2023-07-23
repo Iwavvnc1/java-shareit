@@ -29,24 +29,19 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getById(Long userId, Long itemId) {
-        return get("/{id}" + userId, itemId);
+        return get("/" + itemId, userId);
     }
 
     public ResponseEntity<Object> getAll(Long userId) {
-        Map<String, Object> parameters = Map.of();
-        return get("", userId,parameters);
+        return get("", userId);
     }
 
     public ResponseEntity<Object> create(Long userId, ItemWithRequestDto item) {
-        Map<String, Object> parameters = Map.of();
-        return post("", userId, parameters, item);
+        return post("", userId, item);
     }
 
     public ResponseEntity<Object> update(Long userId, Long itemId, ItemDto item) {
-        Map<String, Object> parameters = Map.of(
-                "itemId", itemId
-        );
-        return patch("", userId, parameters, item);
+        return patch("/" + itemId, userId, item);
     }
 
     public ResponseEntity<Object> search(Long userId, String text) {
@@ -57,9 +52,6 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> createComment(Long userId, Long itemId, Comment comment) {
-        Map<String, Object> parameters = Map.of(
-                "itemId", itemId
-        );
-        return post("/{itemId}/comment", userId, parameters, comment);
+        return post("/" + itemId + "/comment", userId, comment);
     }
 }

@@ -297,64 +297,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByItem_whenInvokedStateCURRENTWithoutSizeAndFrom_thenReturnListBookings() {
-        Long userId = 0L;
-        Long bookingId = 0L;
-        User user = new User(userId);
-        Integer from = null;
-        Integer size = null;
-        String state = "CURRENT";
-        Item item = new Item(0L, "name", "description", true, user, null);
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(2), item, user,
-                Status.WAITING);
-        List<Item> items = List.of(item);
-        List<Long> itemIds = List.of(item.getId());
-        List<Booking> bookings = List.of(booking);
-        when(userRepository.existsUserById(userId)).thenReturn(true);
-        when(itemRepository.findAllByOwnerIdIs(userId)).thenReturn(items);
-        when(bookingRepository.findByItemIdIn(itemIds)).thenReturn(bookings);
-        assertEquals(bookings.get(0).getId(), bookingService.getAllByItem(userId, state, from, size).get(0).getId());
-        verify(userRepository).existsUserById(userId);
-        verify(itemRepository).findAllByOwnerIdIs(userId);
-        verify(bookingRepository).findByItemIdIn(itemIds);
-    }
-
-    @Test
-    void getAllByItem_whenInvokedWithoutStateAndFromAndSize_thenReturnListBookings() {
-        Long userId = 0L;
-        Long bookingId = 0L;
-        User user = new User(userId);
-        Integer from = null;
-        Integer size = null;
-        String state = null;
-        Item item = new Item(0L, "name", "description", true, user, null);
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(2), item, user,
-                Status.WAITING);
-        List<Item> items = List.of(item);
-        List<Long> itemIds = List.of(item.getId());
-        List<Booking> bookings = List.of(booking);
-        when(userRepository.existsUserById(userId)).thenReturn(true);
-        when(itemRepository.findAllByOwnerIdIs(userId)).thenReturn(items);
-        when(bookingRepository.findByItemIdIn(itemIds)).thenReturn(bookings);
-        assertEquals(bookings.get(0).getId(), bookingService.getAllByItem(userId, state, from, size).get(0).getId());
-        verify(userRepository).existsUserById(userId);
-        verify(itemRepository).findAllByOwnerIdIs(userId);
-        verify(bookingRepository).findByItemIdIn(itemIds);
-    }
-
-    @Test
-    void getAllByItem_whenInvokedFailedFromAndSize_thenReturnListBookings() {
-        Long userId = 0L;
-        Integer from = -1;
-        Integer size = -1;
-        String state = null;
-        assertThrows(InCorrectDataException.class, () -> bookingService.getAllByItem(userId, state, from, size));
-        verify(userRepository, never()).existsUserById(userId);
-        verify(itemRepository, never()).findAllByOwnerIdIs(userId);
-        verify(bookingRepository, never()).findByItemIdIn(anyList());
-    }
-
-    @Test
     void getAllByItem_whenInvokedFailedUser_thenReturnListBookings() {
         Long userId = 0L;
         Integer from = 1;
@@ -368,17 +310,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllByUser_whenInvokedFailedFromAndSize_thenReturnListBookings() {
-        Long userId = 0L;
-        Integer from = -1;
-        Integer size = -1;
-        String state = null;
-        assertThrows(InCorrectDataException.class, () -> bookingService.getAllByUser(userId, state, from, size));
-        verify(userRepository, never()).existsUserById(userId);
-        verify(bookingRepository, never()).findByBookerId(any());
-    }
-
-    @Test
     void getAllByUser_whenInvokedFailedUser_thenReturnListBookings() {
         Long userId = 0L;
         Integer from = 1;
@@ -388,48 +319,6 @@ class BookingServiceImplTest {
         assertThrows(NotFoundException.class, () -> bookingService.getAllByUser(userId, state, from, size));
         verify(userRepository).existsUserById(userId);
         verify(bookingRepository, never()).findByBookerId(any());
-    }
-
-    @Test
-    void getAllByUser_whenInvokedWithSizeAndFrom_thenReturnListBookings() {
-        Long userId = 0L;
-        Long bookingId = 0L;
-        User user = new User(userId);
-        Integer from = 1;
-        Integer size = 1;
-        Integer page = 1;
-        String state = null;
-        Item item = new Item(0L, "name", "description", true, user, null);
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(2), item, user,
-                Status.WAITING);
-        List<Booking> bookings = List.of(booking);
-        PageImpl<Booking> bookingPage = new PageImpl<>(bookings);
-        when(userRepository.existsUserById(userId)).thenReturn(true);
-        when(bookingRepository.findByBookerId(userId, PageRequest.of(page, size, Sort.by("id").descending())))
-                .thenReturn(bookingPage);
-        assertEquals(bookings.get(0).getId(), bookingService.getAllByUser(userId, state, from, size).get(0).getId());
-        verify(userRepository).existsUserById(userId);
-        verify(bookingRepository).findByBookerId(userId,
-                PageRequest.of(page, size, Sort.by("id").descending()));
-    }
-
-    @Test
-    void getAllByUser_whenInvokedWithOutSizeAndFrom_thenReturnListBookings() {
-        Long userId = 0L;
-        Long bookingId = 0L;
-        User user = new User(userId);
-        Integer from = null;
-        Integer size = null;
-        String state = null;
-        Item item = new Item(0L, "name", "description", true, user, null);
-        Booking booking = new Booking(bookingId, LocalDateTime.now(), LocalDateTime.now().plusHours(2), item, user,
-                Status.WAITING);
-        List<Booking> bookings = List.of(booking);
-        when(userRepository.existsUserById(userId)).thenReturn(true);
-        when(bookingRepository.findByBookerId(userId)).thenReturn(bookings);
-        assertEquals(bookings.get(0).getId(), bookingService.getAllByUser(userId, state, from, size).get(0).getId());
-        verify(userRepository).existsUserById(userId);
-        verify(bookingRepository).findByBookerId(userId);
     }
 
     @Test

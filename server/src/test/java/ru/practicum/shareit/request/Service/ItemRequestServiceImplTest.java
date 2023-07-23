@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import ru.practicum.shareit.exception.InCorrectDataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -120,40 +119,6 @@ class ItemRequestServiceImplTest {
         verify(userRepository).existsUserById(userId);
         verify(itemRequestRepository).findAll(PageRequest.of(page, size, Sort.by("created")));
         verify(itemRepository).findByRequestId(requestId);
-    }
-
-    @Test
-    void getSort_whenInvoked_thenReturnRequest() {
-        Long userId = 0L;
-        Long requestId = 0L;
-        Integer from = null;
-        Integer size = null;
-        User user = new User(userId);
-        ItemRequest request = new ItemRequest(requestId, "description", null, LocalDateTime.now());
-        List<ItemRequest> requests = List.of(request);
-        Item item = new Item(0L, "name", "description", true, user, request);
-        List<Item> items = List.of(item);
-        when(userRepository.existsUserById(userId)).thenReturn(true);
-        when(itemRequestRepository.findAllByRequestorId(userId)).thenReturn(requests);
-        when(itemRepository.findByRequestId(requestId)).thenReturn(items);
-        List<ItemRequestWithItemsDto> returnRequest = itemRequestService.getSort(userId, from, size);
-        assertFalse(returnRequest.isEmpty());
-        verify(userRepository, times(2)).existsUserById(userId);
-        verify(itemRequestRepository).findAllByRequestorId(userId);
-        verify(itemRepository).findByRequestId(requestId);
-    }
-
-    @Test
-    void getSort_whenInvokedWithIncorrectFromAndSize_thenReturnException() {
-        Long userId = 0L;
-        Long requestId = 0L;
-        Integer from = -1;
-        Integer size = -1;
-        when(userRepository.existsUserById(userId)).thenReturn(true);
-        assertThrows(InCorrectDataException.class, () -> itemRequestService.getSort(userId, from, size));
-        verify(userRepository).existsUserById(userId);
-        verify(itemRequestRepository, never()).findAllByRequestorId(userId);
-        verify(itemRepository, never()).findByRequestId(requestId);
     }
 
     @Test

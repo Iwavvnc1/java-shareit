@@ -12,4 +12,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
                                                                                            Boolean available);
 
     List<Item> findByRequestId(Long requestId);
+
 }

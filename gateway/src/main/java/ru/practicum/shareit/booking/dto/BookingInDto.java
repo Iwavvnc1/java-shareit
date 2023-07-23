@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.Future;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -19,6 +18,6 @@ public class BookingInDto {
     @NotNull
     LocalDateTime end;
     Long bookerId;
-    @NotBlank
+    @NotNull
     Long itemId;
 }
