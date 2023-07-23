@@ -1,9 +1,11 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.InCorrectDataException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -120,10 +122,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public ItemWithTimeAndCommentDto getItemWithTimeAndCommentDto(Item item) {
-        Booking lastBooking = bookingRepository
-                .getFirstByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
-        Booking nextBooking = bookingRepository
-                .getTopByItemIdAndStartAfterOrderByStartAsc(item.getId(), LocalDateTime.now());
+        Booking lastBooking = bookingRepository.findTop1BookingByItemIdAndEndIsBeforeAndStatusIs(
+                item.getId(), LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.DESC, "end"));
+        Booking nextBooking = bookingRepository.findTop1BookingByItemIdAndEndIsAfterAndStatusIs(
+                item.getId(), LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.ASC, "end"));
         List<CommentDto> itemComments = commentRepository.findCommentsByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentDto).collect(Collectors.toList());
         if (nextBooking == null && lastBooking != null) {
