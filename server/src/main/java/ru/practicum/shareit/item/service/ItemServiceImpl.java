@@ -120,9 +120,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public ItemWithTimeAndCommentDto getItemWithTimeAndCommentDto(Item item) {
-        Booking nextBooking = bookingRepository
-                .getFirstByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
         Booking lastBooking = bookingRepository
+                .getFirstByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now());
+        Booking nextBooking = bookingRepository
                 .getTopByItemIdAndStartAfterOrderByStartAsc(item.getId(), LocalDateTime.now());
         List<CommentDto> itemComments = commentRepository.findCommentsByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentDto).collect(Collectors.toList());

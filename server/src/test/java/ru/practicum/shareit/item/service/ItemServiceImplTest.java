@@ -131,7 +131,7 @@ class ItemServiceImplTest {
         when(userRepository.existsUserById(userId)).thenReturn(true);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
         when(commentRepository.findCommentsByItemId(itemId)).thenReturn(itemComments);
-        when(bookingRepository.getTopByItemIdAndStartAfterOrderByStartAsc(any(), any())).thenReturn(booking);
+        when(bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(any(), any())).thenReturn(booking);
         ItemWithTimeAndCommentDto returnItem = itemService.getById(userId, itemId);
         assertEquals("name", returnItem.getName());
         assertEquals("description", returnItem.getDescription());
@@ -158,7 +158,7 @@ class ItemServiceImplTest {
         List<Comment> itemComments = List.of(comment);
         when(userRepository.existsUserById(userId)).thenReturn(true);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(any(), any())).thenReturn(booking);
+        when(bookingRepository.getTopByItemIdAndStartAfterOrderByStartAsc(any(), any())).thenReturn(booking);
         when(commentRepository.findCommentsByItemId(itemId)).thenReturn(itemComments);
         ItemWithTimeAndCommentDto returnItem = itemService.getById(userId, itemId);
         assertEquals("name", returnItem.getName());
@@ -185,11 +185,12 @@ class ItemServiceImplTest {
         Booking booking2 = new Booking(bookingId2, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
                 item, user, Status.APPROVED);
         Comment comment = new Comment(commentId, "text", item, user, LocalDateTime.now());
+        List<Booking> itemBookings = List.of(booking, booking2);
         List<Comment> itemComments = List.of(comment);
         when(userRepository.existsUserById(userId)).thenReturn(true);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-        when(bookingRepository.getTopByItemIdAndStartAfterOrderByStartAsc(any(), any())).thenReturn(booking);
-        when(bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(any(), any())).thenReturn(booking2);
+        when(bookingRepository.getTopByItemIdAndStartAfterOrderByStartAsc(any(), any())).thenReturn(booking2);
+        when(bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(any(), any())).thenReturn(booking);
         when(commentRepository.findCommentsByItemId(itemId)).thenReturn(itemComments);
         ItemWithTimeAndCommentDto returnItem = itemService.getById(userId, itemId);
         assertEquals("name", returnItem.getName());
