@@ -122,15 +122,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     public ItemWithTimeAndCommentDto getItemWithTimeAndCommentDto(Item item) {
+        LocalDateTime localDateTime = LocalDateTime.now();
         Booking lastBooking = bookingRepository.findTop1BookingByItemIdAndEndIsBeforeAndStatusIs(
-                item.getId(), LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.DESC, "end"));
+                item.getId(), localDateTime, Status.APPROVED, Sort.by(Sort.Direction.DESC, "end"));
         Booking nextBooking = bookingRepository.findTop1BookingByItemIdAndEndIsAfterAndStatusIs(
-                item.getId(), LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.ASC, "end"));
+                item.getId(), localDateTime, Status.APPROVED, Sort.by(Sort.Direction.ASC, "end"));
         List<CommentDto> itemComments = commentRepository.findCommentsByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentDto).collect(Collectors.toList());
         if (nextBooking == null && lastBooking != null) {
             return toItemWithTimeDto(item, toBookingIdOutDto(lastBooking), null, itemComments);
         } else if (nextBooking != null && lastBooking == null) {
+            if (nextBooking.getStart().isBefore(localDateTime)) {
+                return toItemWithTimeDto(item, toBookingIdOutDto(nextBooking), null, itemComments);
+            }
             return toItemWithTimeDto(item, null, toBookingIdOutDto(nextBooking), itemComments);
         } else if (nextBooking == null) {
             return toItemWithTimeDto(item, null, null, itemComments);

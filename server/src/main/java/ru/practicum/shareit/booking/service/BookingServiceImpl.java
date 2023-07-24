@@ -63,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByItemIdIn(itemIds, PageRequest.of(page, size, Sort.by("id")
                         .descending()))
                 .stream();
-        return getAllByState(bookings, state, page, size);
+        return getAllByState(bookings, state);
     }
 
     @Transactional
@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
                 .findByBookerId(userId, PageRequest.of(page, size, Sort.by("id")
                         .descending()))
                 .stream();
-        return getAllByState(bookings, state, page, size);
+        return getAllByState(bookings, state);
     }
 
     @Transactional
@@ -115,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private List<BookingOutDto> getAllByState(Stream<Booking> bookings, String state, Integer page, Integer size) {
+    private List<BookingOutDto> getAllByState(Stream<Booking> bookings, String state) {
 
         switch (state) {
             case ("ALL"):
@@ -123,7 +123,8 @@ public class BookingServiceImpl implements BookingService {
                         .map(BookingMapper::toBookingOutDto).collect(Collectors.toList());
             case ("CURRENT"):
                 bookings = bookings.filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
-                        .filter(booking -> booking.getEnd().isAfter(LocalDateTime.now()));
+                        .filter(booking -> booking.getEnd().isAfter(LocalDateTime.now()))
+                        .sorted(Comparator.comparing(Booking::getId));
                 break;
             case ("PAST"):
                 bookings = bookings.filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
