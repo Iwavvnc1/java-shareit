@@ -1,11 +1,11 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingIdOutDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exception.InCorrectDataException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -25,7 +25,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.booking.dto.BookingMapper.toBookingIdOutDto;
 import static ru.practicum.shareit.item.dto.CommentMapper.toCommentDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.*;
 
@@ -123,24 +122,26 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemWithTimeAndCommentDto getItemWithTimeAndCommentDto(Item item) {
         LocalDateTime localDateTime = LocalDateTime.now();
-        Booking lastBooking = bookingRepository.findTop1BookingByItemIdAndEndIsBeforeAndStatusIs(
-                item.getId(), localDateTime, Status.APPROVED, Sort.by(Sort.Direction.DESC, "end"));
-        Booking nextBooking = bookingRepository.findTop1BookingByItemIdAndEndIsAfterAndStatusIs(
-                item.getId(), localDateTime, Status.APPROVED, Sort.by(Sort.Direction.ASC, "end"));
+        List<Booking> itemBookings = bookingRepository.findBookingByItemId(item.getId());
         List<CommentDto> itemComments = commentRepository.findCommentsByItemId(item.getId()).stream()
                 .map(CommentMapper::toCommentDto).collect(Collectors.toList());
+        BookingIdOutDto lastBooking = itemBookings.stream().filter(booking -> booking.getEnd().isBefore(localDateTime))
+                .max(Comparator.comparing(Booking::getEnd)).map(BookingMapper::toBookingIdOutDto).orElse(null);
+        BookingIdOutDto nextBooking = itemBookings.stream().filter(booking -> booking.getStart().isAfter(localDateTime))
+                .min(Comparator.comparing(Booking::getStart)).map(BookingMapper::toBookingIdOutDto).orElse(null);
         if (nextBooking == null && lastBooking != null) {
-            return toItemWithTimeDto(item, toBookingIdOutDto(lastBooking), null, itemComments);
+            return toItemWithTimeDto(item, lastBooking, null, itemComments);
         } else if (nextBooking != null && lastBooking == null) {
-            if (nextBooking.getStart().isBefore(localDateTime)) {
-                return toItemWithTimeDto(item, toBookingIdOutDto(nextBooking), null, itemComments);
-            }
-            return toItemWithTimeDto(item, null, toBookingIdOutDto(nextBooking), itemComments);
+            return toItemWithTimeDto(item, null, nextBooking, itemComments);
         } else if (nextBooking == null) {
+            if (itemBookings.size() > 0) {
+                BookingIdOutDto lastBooking1 =
+                        itemBookings.stream().map(BookingMapper::toBookingIdOutDto).findFirst().get();
+                return toItemWithTimeDto(item, lastBooking1, null, itemComments);
+            }
             return toItemWithTimeDto(item, null, null, itemComments);
         } else {
-            return toItemWithTimeDto(item, toBookingIdOutDto(lastBooking), toBookingIdOutDto(nextBooking),
-                    itemComments);
+            return toItemWithTimeDto(item, lastBooking, nextBooking, itemComments);
         }
     }
 

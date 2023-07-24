@@ -2,14 +2,11 @@ package ru.practicum.shareit.booking.storage;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.Status;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -34,10 +31,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "and b.status = 1")
     List<Booking> findBookingByItemId(Long itemId);
 
-    Booking findTop1BookingByItemIdAndEndIsBeforeAndStatusIs(
-            Long itemId, LocalDateTime end, Status status, Sort sort);
-
-    Booking findTop1BookingByItemIdAndEndIsAfterAndStatusIs(
-            Long itemId, LocalDateTime end, Status status, Sort sort);
 }
 
