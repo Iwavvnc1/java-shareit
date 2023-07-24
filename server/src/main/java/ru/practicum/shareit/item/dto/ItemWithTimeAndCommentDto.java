@@ -1,20 +1,20 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingIdOutDto;
 
 import java.util.List;
 
 
-@Value
+@Data
 @Builder(toBuilder = true)
 public class ItemWithTimeAndCommentDto {
-    Long id;
-    String name;
-    String description;
-    Boolean available;
-    BookingIdOutDto lastBooking;
-    BookingIdOutDto nextBooking;
-    List<CommentDto> comments;
+    private Long id;
+    private String name;
+    private String description;
+    private Boolean available;
+    private BookingIdOutDto lastBooking;
+    private BookingIdOutDto nextBooking;
+    private List<CommentDto> comments;
 }

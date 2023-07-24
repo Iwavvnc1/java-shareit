@@ -1,16 +1,16 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Value
+@Data
 @Builder(toBuilder = true)
 public class ItemRequestCreateDto {
-    Long id;
+    private Long id;
     @NotNull
-    String description;
-    LocalDateTime created;
+    private String description;
+    private LocalDateTime created;
 }

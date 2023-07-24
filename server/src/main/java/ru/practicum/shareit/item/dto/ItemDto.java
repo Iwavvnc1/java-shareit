@@ -1,17 +1,17 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 /**
  * TODO Sprint add-controllers.
  */
-@Value
+@Data
 @Builder(toBuilder = true)
 public class ItemDto {
-    Long id;
-    String name;
-    String description;
-    Boolean available;
-    Long requestId;
+    private Long id;
+    private String name;
+    private String description;
+    private Boolean available;
+    private Long requestId;
 }

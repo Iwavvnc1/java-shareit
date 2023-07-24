@@ -28,7 +28,7 @@ public class BookingClient extends BaseClient {
 
     public ResponseEntity<Object> create(Long userId, BookingInDto bookingDto) {
         Map<String, Object> parameters = Map.of();
-        return post("", userId, parameters,bookingDto);
+        return post("", userId, parameters, bookingDto);
     }
 
     public ResponseEntity<Object> updateStatus(Long userId, Long bookingId, Boolean approved) {
@@ -36,7 +36,7 @@ public class BookingClient extends BaseClient {
                 "bookingId", bookingId,
                 "approved", approved
         );
-        return patch("/{bookingId}?approved={approved}", userId, parameters,null);
+        return patch("/{bookingId}?approved={approved}", userId, parameters, null);
     }
 
     public ResponseEntity<Object> getAllByUser(Long userId, String state, Integer from, Integer size) {
